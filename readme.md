@@ -34,6 +34,8 @@ Make sure you successfully finished 1.1.
 * Open http://{HOST}:{PORT}/swagger-ui/index.html
 * Use {HOST}=localhost and {PORT}=8080. It may vary based upon your deployment.
 * Example: http://localhost:8080/swagger-ui/index.html
+<img width="1786" alt="Screenshot 2021-12-20 at 8 55 25 AM" src="https://user-images.githubusercontent.com/17001948/146707426-159122eb-b728-4124-b192-2b54916cbebb.png">
+
 
 ## 1.4.1 How to access swagger when running in tomcat:
 * Make sure you are done with 1.2.
