@@ -4,6 +4,28 @@
 - CREATE PULL REQUEST ALWAYS.
 ```
 
+## 1.5 Add ssh keys to git
+* Download and Install Git
+* Read document: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+* Watch Video: https://www.youtube.com/watch?v=jfi9n4y-WFo
+
+## 1.6 Clone project
+* Finish step 1.5
+* Go to any directory and open a cmd or terminal. 
+* Do cloning of code: git clone git@github.com:umaa-java-sept-2020/login-service.git
+<img width="1792" alt="Screenshot 2021-12-21 at 9 12 13 AM" src="https://user-images.githubusercontent.com/17001948/146867311-8273edae-d4fa-4a51-8dab-6bd54675cb1b.png">
+
+## 1.7 Open project in Intellij
+* File > New > Project From Existing Source. Locate the login-service > application > login-build > pom.xml. Then click open.
+<img width="1792" alt="Screenshot 2021-12-21 at 9 15 06 AM" src="https://user-images.githubusercontent.com/17001948/146867636-c089963d-00f7-4732-a69e-24f168099789.png">
+<br/>
+<img width="1792" alt="Screenshot 2021-12-21 at 9 15 48 AM" src="https://user-images.githubusercontent.com/17001948/146867685-3d67d6ca-af8f-4774-a0a1-6081ce73404d.png">
+
+* This will open in IntelliJ as below:
+
+<img width="1792" alt="Screenshot 2021-12-21 at 9 18 44 AM" src="https://user-images.githubusercontent.com/17001948/146867836-3c65b484-c000-481e-ab16-c2c00831437d.png">
+
+
 ## Understand the project structure:
 * application
   * login-build
@@ -42,29 +64,6 @@ Make sure you successfully finished 1.1.
 * Open http://{HOST}:{PORT}/{APP_NAME}/swagger-ui/index.html
 * Use {HOST}=localhost and {PORT}=8080. It may vary based upon your deployment.
 * Use {APP_NAME}=your war file name which is deployed in tomcat.
-
-## 1.5 Add ssh keys to git
-* Download and Install Git
-* Read document: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-* Watch Video: https://www.youtube.com/watch?v=jfi9n4y-WFo
-
-## 1.6 Clone project
-* Finish step 1.5
-* Go to any directory and open a cmd or terminal. 
-* Do cloning of code: git clone git@github.com:umaa-java-sept-2020/login-service.git
-<img width="1792" alt="Screenshot 2021-12-21 at 9 12 13 AM" src="https://user-images.githubusercontent.com/17001948/146867311-8273edae-d4fa-4a51-8dab-6bd54675cb1b.png">
-
-## 1.7 Open project in Intellij
-* File > New > Project From Existing Source. Locate the login-service > application > login-build > pom.xml. Then click open.
-<img width="1792" alt="Screenshot 2021-12-21 at 9 15 06 AM" src="https://user-images.githubusercontent.com/17001948/146867636-c089963d-00f7-4732-a69e-24f168099789.png">
-<br/>
-<img width="1792" alt="Screenshot 2021-12-21 at 9 15 48 AM" src="https://user-images.githubusercontent.com/17001948/146867685-3d67d6ca-af8f-4774-a0a1-6081ce73404d.png">
-
-* This will open in IntelliJ as below:
-
-<img width="1792" alt="Screenshot 2021-12-21 at 9 18 44 AM" src="https://user-images.githubusercontent.com/17001948/146867836-3c65b484-c000-481e-ab16-c2c00831437d.png">
-
-
 
 Color Coding Text Note:
 ```diff
