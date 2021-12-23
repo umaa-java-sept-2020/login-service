@@ -47,7 +47,7 @@ Then go to tomcat/bin and open a cmd. Start with `catalina.bat run` (for linux s
 
 ## 1.3 How to run in local using mvn:
 Make sure you successfully finished 1.1.
-* start your mysql database.
+* Go to login-server. start your mysql database.
 * Then do `mvn spring-boot:run`
 * watch the logs in terminal and report if any error.
 
@@ -66,9 +66,40 @@ Make sure you successfully finished 1.1.
 * Use {APP_NAME}=your war file name which is deployed in tomcat.
 
 ## 1.8 Build the code using shell script
-* Go to login-service
+* This is alternate to step 1.1. Go to login-service
 * Open a terminal
-* Run sh build.sh
+* Run `sh build.sh`
+
+## 1.9 Run the code using shell script
+* This is alternate to 1.3. Go to login-service
+* Open a terminal.
+* Run `sh mvnSpringBootRun.sh`
+
+## 2.0 Datasource configuration
+* Open login-security > pom.xml and add below maven dependency
+```xml
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+```
+* Create a file database.properties under login-security/src/main/resources
+* Add database configuration to database.properties file as below:
+```diff
+db.datasource.url= jdbc:mysql://localhost:3306/testdb?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+db.datasource.username= root
+db.datasource.password= root_pass
+db.datasource.driver-classname= com.mysql.jdbc.Driver
+```
+* You may need to change the password accordingly
+* Create DatabaseConfig class that defines dataSource bean.
+* Create a dao class that provides jdbcTemplate using dataSource bean.
+
 Color Coding Text Note:
 ```diff
 - red 
