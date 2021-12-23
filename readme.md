@@ -100,6 +100,12 @@ db.datasource.driver-classname= com.mysql.jdbc.Driver
 * Create DatabaseConfig class that defines dataSource bean.
 * Create a dao class that provides jdbcTemplate using dataSource bean.
 
+## Self Evaluation:
+* What is datasource in JDBC?
+* What is JDBCTemplate in Spring JDBC?
+* What is a bean in spring and what does it do?
+* What are the lifeccyles of spring bean using annotation?
+
 Color Coding Text Note:
 ```diff
 - red 
