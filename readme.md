@@ -65,6 +65,10 @@ Make sure you successfully finished 1.1.
 * Use {HOST}=localhost and {PORT}=8080. It may vary based upon your deployment.
 * Use {APP_NAME}=your war file name which is deployed in tomcat.
 
+## 1.8 Build the code using shell script
+* Go to login-service
+* Open a terminal
+* Run sh build.sh
 Color Coding Text Note:
 ```diff
 - red 

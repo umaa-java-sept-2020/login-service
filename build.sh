@@ -1,0 +1,1 @@
+mvn clean install -DskipTests -f application/login-build/pom.xml

@@ -1,0 +1,1 @@
+mvn spring-boot:run -f application/login-server/pom.xml
