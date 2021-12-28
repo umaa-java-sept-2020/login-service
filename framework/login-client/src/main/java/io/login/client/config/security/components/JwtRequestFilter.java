@@ -40,7 +40,7 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Applicatio
         final String requestTokenHeader = request.getHeader("Authorization");
         // do rest call
         String path = "/open-login/validate-jwt/jwt";
-        LOGGER.info("do rest call to the endpoint: {} for validating the jwt token", securityConfigProvider.getLoginUrl() + path);
+        LOGGER.info("do rest call to the endpoint: {} for validating the jwt token", securityConfigProvider.getLoginUrl() +path);
         chain.doFilter(request, response);
     }
 

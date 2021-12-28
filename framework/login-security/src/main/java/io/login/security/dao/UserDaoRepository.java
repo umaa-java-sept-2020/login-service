@@ -30,7 +30,6 @@ public class UserDaoRepository implements IUserRepository {
     public LoginUser getUserByUUID(String uuid) {
         return null;
     }
-
     @Override
     public LoginUser getUserByUsername(String username) {
         return null;
@@ -55,4 +54,5 @@ public class UserDaoRepository implements IUserRepository {
     public boolean saveResetPasswordToken(String username, String resetPasswordToken) {
         return false;
     }
+
 }

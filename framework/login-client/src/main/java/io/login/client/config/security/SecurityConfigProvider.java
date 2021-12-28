@@ -59,7 +59,7 @@ public abstract class SecurityConfigProvider {
         this.loginConfig = loginConfig;
     }
 
-    protected String getLoginUrl(){
+    public String getLoginUrl(){
         return loginConfig.getLoginUrl();
     }
 
