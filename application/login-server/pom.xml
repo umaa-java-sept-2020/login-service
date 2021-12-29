@@ -49,7 +49,6 @@
 			<artifactId>flyway-core</artifactId>
 			<version>${flyway.version}</version>
 		</dependency>
-<<<<<<< HEAD
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -60,8 +59,7 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-=======
->>>>>>> 0b56742e93025794757f895310e7e8daf2687eac
+
 	</dependencies>
 
 	<build>
