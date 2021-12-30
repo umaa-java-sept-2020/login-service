@@ -1,6 +1,5 @@
 package io.login.client.handler;
 
-import io.login.client.models.LoginRequest;
 import io.login.client.models.UserAuthContext;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,10 +13,4 @@ public interface ILoginHandler {
      */
     UserAuthContext validateToken(HttpServletRequest request);
 
-    /**
-     * http calls to login server for authentication
-     * @param loginRequest
-     * @return
-     */
-    UserAuthContext authenticate(LoginRequest loginRequest);
 }

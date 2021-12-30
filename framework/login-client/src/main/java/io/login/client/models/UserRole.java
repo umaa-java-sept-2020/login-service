@@ -7,5 +7,5 @@ import lombok.*;
 @ToString
 public enum UserRole {
 
-    ADMIN, USER, VISITOR
+    ADMIN, USER, VISITOR, HR, INTERVIEWER, CANDIDATE
 }
