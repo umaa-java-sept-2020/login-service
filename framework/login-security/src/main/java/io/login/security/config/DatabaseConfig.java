@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 @Getter
 @Setter
 @Configuration
-@PropertySource("classpath:database.properties")
 public class DatabaseConfig {
 
     @Value("${db.datasource.url}")
