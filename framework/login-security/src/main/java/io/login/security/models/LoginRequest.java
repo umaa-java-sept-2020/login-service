@@ -12,4 +12,11 @@ public class LoginRequest extends LoginUser {
 
     private Optional<String> resetPasswordToken;
 
+    public Optional<String> getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(Optional<String> resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
+    }
 }
