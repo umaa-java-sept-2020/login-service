@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 public class UserDaoRepository implements IUserRepository {
 
     private static Logger LOGGER = LoggerFactory.getLogger(UserDaoRepository.class);
+    private static final  String SAVE_DRAFT_TOKEN ="INSERT  INTO DRAFT_TOKEN VALUES(?,?);";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -32,6 +33,7 @@ public class UserDaoRepository implements IUserRepository {
     }
     @Override
     public LoginUser getUserByUsername(String username) {
+
         return null;
     }
 
@@ -51,8 +53,14 @@ public class UserDaoRepository implements IUserRepository {
     }
 
     @Override
-    public boolean saveResetPasswordToken(String username, String resetPasswordToken) {
-        return false;
+    public boolean saveResetPasswordToken(String username, String resetPasswordToken)
+    {
+        Object[] objects = new Object[]{username,resetPasswordToken};
+
+        if (jdbcTemplate.update(SAVE_DRAFT_TOKEN,objects) == 1)
+            return true;
+        else
+            return false;
     }
 
 }
