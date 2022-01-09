@@ -30,12 +30,10 @@ public class OpenAuthenticationApiController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<LoginUser> authenticate(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        LoginUser loginUser = this.userService.authenticate(loginRequest);
+        LoginUser loginUser = this.userService.authenticate(loginRequest, response);
         if (loginUser instanceof LoginRequest) {
             return ResponseEntity.ok().body(loginUser);
         }
-        String token = jwtTokenUtil.generateToken(loginUser);
-        response.setHeader("Authorization", "Bearer " + token);
         return ResponseEntity.noContent().build();
     }
 

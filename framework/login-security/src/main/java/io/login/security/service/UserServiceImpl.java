@@ -6,7 +6,9 @@ import io.login.security.models.LoginRequest;
 import io.login.security.models.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +16,13 @@ import java.util.UUID;
 public class UserServiceImpl implements IUserService{
 
     private IUserRepository userRepository;
+
+    private IUserAuthenticationService userAuthenticationService;
+
+    @Autowired
+    public void setUserAuthenticationService(IUserAuthenticationService userAuthenticationService) {
+        this.userAuthenticationService = userAuthenticationService;
+    }
 
     @Autowired
     public void setUserRepository(IUserRepository userRepository) {
@@ -26,13 +35,14 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
+    @Transactional
     public LoginUser resetPassword(LoginRequest loginRequest) {
         if(1==this.userRepository.getResetPasswordTokenCount(loginRequest.getUsername(), loginRequest.getResetPasswordToken().get())) {
             LoginUser loginUser = this.userRepository.getUserByUsername(loginRequest.getUsername());
-            loginUser.setPassword(loginUser.getPassword());
-            this.userRepository.updateUserPassword(loginUser);
+            loginUser.setPassword(loginRequest.getPassword());
+            this.userRepository.updateUserPassword(loginUser);// update
             loginUser.setUserStatus(UserStatus.ACTIVE);
-            this.updateAccountStatus(loginUser);
+            this.updateAccountStatus(loginUser); // database
             return loginUser;
         }
 
@@ -45,15 +55,22 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
-    public LoginUser authenticate(LoginRequest loginRequest) {
+    public LoginUser authenticate(LoginRequest loginRequest, HttpServletResponse response) {
         LoginUser loginUser = this.userRepository.getUserByUsername(loginRequest.getUsername());
         if(loginUser.getUserStatus() == UserStatus.DRAFT){
           loginRequest =  generateResetPasswordToken(loginRequest);
           return loginRequest;
         }
 
-        if(loginUser.getUserStatus() == UserStatus.ACTIVE)
-            return loginUser;
+        if(loginUser.getUserStatus() == UserStatus.ACTIVE) {
+            try {
+                String jwtToken = userAuthenticationService.authenticate(loginUser.getUsername(), loginUser.getPassword());
+                response.setHeader("Authorization", "Bearer " + jwtToken);
+                return loginUser;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         throw new RuntimeException("operation not allowed. user status is: "+loginUser.getUserStatus().name());
     }

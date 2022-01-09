@@ -29,10 +29,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         LoginUser loginUser = null;
         try {
-            loginUser = new LoginUser();//userRepository.getUserByUsername(username);
-            loginUser.setUsername("user1");
-            loginUser.setPassword("pass1");
-            loginUser.setUserStatus(UserStatus.ACTIVE);
+            loginUser = userRepository.getUserByUsername(username);
         } catch (Exception throwables) {
            throw new RuntimeException(throwables);
         }
