@@ -17,6 +17,7 @@ import java.sql.SQLException;
 public class UserDaoRepository implements IUserRepository {
 
     private static Logger LOGGER = LoggerFactory.getLogger(UserDaoRepository.class);
+    private static final  String SAVE_DRAFT_TOKEN ="INSERT  INTO DRAFT_TOKEN VALUES(?,?);";
 
     private static final String SELECT_USER_BY_USERNAME = "SELECT * FROM TBL_LOGIN_USER WHERE USERNAME=?";
 
@@ -58,8 +59,13 @@ public class UserDaoRepository implements IUserRepository {
     }
 
     @Override
-    public boolean saveResetPasswordToken(String username, String resetPasswordToken) {
-        return false;
+    public boolean saveResetPasswordToken(String username, String resetPasswordToken)
+    {
+        Object[] objects = new Object[]{username,resetPasswordToken};
+        if (jdbcTemplate.update(SAVE_DRAFT_TOKEN,objects) == 1)
+            return true;
+        else
+            return false;
     }
 
 
