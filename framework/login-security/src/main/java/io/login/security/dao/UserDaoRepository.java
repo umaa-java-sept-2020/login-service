@@ -17,9 +17,12 @@ import java.sql.SQLException;
 public class UserDaoRepository implements IUserRepository {
 
     private static Logger LOGGER = LoggerFactory.getLogger(UserDaoRepository.class);
-    private static final  String SAVE_DRAFT_TOKEN ="INSERT  INTO DRAFT_TOKEN VALUES(?,?);";
+    private static final  String SAVE_DRAFT_TOKEN ="INSERT INTO TBL_RESET_PASSWORD(USERNAME,RESET_PASSWORD_TOKEN,STATUS,CREATED_AT) VALUES(?,?,?,?);";
+    private static final  String COUNT_SAVE_DRAFT_TOKEN ="SELECT COUNT(*) FROM TBL_RESET_PASSWORD WHERE USERNAME=? AND RESET_PASSWORD_TOKEN=? AND STATUS='NEW';";
 
     private static final String SELECT_USER_BY_USERNAME = "SELECT * FROM TBL_LOGIN_USER WHERE USERNAME=?";
+    private static final String UPDATE_USER_PASSWORD_BY_USERNAME = "UPDATE TBL_LOGIN_USER SET PASSWORD=? WHERE USERNAME=?";
+    private static final String UPDATE_USER_STATUS_BY_USERNAME = "UPDATE TBL_LOGIN_USER SET STATUS=? WHERE USERNAME=?";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -45,24 +48,30 @@ public class UserDaoRepository implements IUserRepository {
 
     @Override
     public LoginUser updateUserPassword(LoginUser loginUser) {
-        return null;
+        jdbcTemplate.update(UPDATE_USER_PASSWORD_BY_USERNAME, new Object[]{loginUser.getPassword(), loginUser.getUsername()});
+        return getUserByUsername(loginUser.getUsername());
     }
 
     @Override
     public LoginUser updateUserStatus(LoginUser loginUser) {
-        return null;
+        jdbcTemplate.update(UPDATE_USER_STATUS_BY_USERNAME, new Object[]{loginUser.getUserStatus().name(), loginUser.getUsername()});
+        return getUserByUsername(loginUser.getUsername());
     }
 
     @Override
     public Integer getResetPasswordTokenCount(String username, String resetPasswordToken) {
-        return null;
+        return jdbcTemplate.queryForObject(COUNT_SAVE_DRAFT_TOKEN,
+                Integer.class,
+                new Object[]{username,resetPasswordToken});
     }
 
     @Override
     public boolean saveResetPasswordToken(String username, String resetPasswordToken)
     {
-        Object[] objects = new Object[]{username,resetPasswordToken};
-        if (jdbcTemplate.update(SAVE_DRAFT_TOKEN,objects) == 1)
+        String status = "NEW";
+        Long createdAt = System.currentTimeMillis();
+        Object[] objects = new Object[]{username, resetPasswordToken, status, createdAt};
+        if (jdbcTemplate.update(SAVE_DRAFT_TOKEN, objects) == 1)
             return true;
         else
             return false;
