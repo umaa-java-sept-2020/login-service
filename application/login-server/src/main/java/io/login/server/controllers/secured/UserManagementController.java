@@ -2,6 +2,7 @@ package io.login.server.controllers.secured;
 
 import io.login.client.models.UserAuthContext;
 import io.login.client.models.UserAccount;
+import io.login.security.service.IUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserManagementController {
 
+    private IUserService userService;
     @GetMapping("/user/{userId}")
     public ResponseEntity<UserAccount> getUserInfo()
     {
