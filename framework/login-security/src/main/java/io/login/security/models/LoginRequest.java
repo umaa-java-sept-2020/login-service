@@ -8,8 +8,10 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class LoginRequest extends LoginUser {
+public class LoginRequest {
 
+    private String username;
+    private String password;
     private Optional<String> resetPasswordToken;
 
     public Optional<String> getResetPasswordToken() {

@@ -41,7 +41,7 @@ public class UserServiceImpl implements IUserService{
             LoginUser loginUser = this.userRepository.getUserByUsername(loginRequest.getUsername());
             loginUser.setPassword(loginRequest.getPassword());
             this.userRepository.updateUserPassword(loginUser);// update
-            loginUser.setUserStatus(UserStatus.ACTIVE);
+            loginUser.setStatus(UserStatus.ACTIVE);
             this.updateAccountStatus(loginUser); // database
             return loginUser;
         }
@@ -55,33 +55,33 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
-    public LoginUser authenticate(LoginRequest loginRequest, HttpServletResponse response) {
+    public void authenticate(LoginRequest loginRequest, HttpServletResponse response) {
         LoginUser loginUser = this.userRepository.getUserByUsername(loginRequest.getUsername());
-        if(loginUser.getUserStatus() == UserStatus.DRAFT){
-          loginRequest =  generateResetPasswordToken(loginRequest);
-          return loginRequest;
+        if(loginUser.getStatus() == UserStatus.DRAFT){
+          String token  =  generateResetPasswordToken(loginRequest);
+          response.setHeader("resetPasswordToken", token);
+          return;
         }
 
-        if(loginUser.getUserStatus() == UserStatus.ACTIVE) {
+        if(loginUser.getStatus() == UserStatus.ACTIVE) {
             try {
                 String jwtToken = userAuthenticationService.authenticate(loginUser.getUsername(), loginUser.getPassword());
                 response.setHeader("Authorization", "Bearer " + jwtToken);
-                return loginUser;
+                return;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
-        throw new RuntimeException("operation not allowed. user status is: "+loginUser.getUserStatus().name());
+        throw new RuntimeException("operation not allowed. user status is: "+loginUser.getStatus().name());
     }
 
     @Override
-    public LoginRequest generateResetPasswordToken(LoginRequest loginRequest) {
+    public String generateResetPasswordToken(LoginRequest loginRequest) {
         String resetPasswordToken = UUID.randomUUID().toString();
         boolean flag =this.userRepository.saveResetPasswordToken(loginRequest.getUsername(), resetPasswordToken);
         if(!flag)
             throw new RuntimeException("error while persisting reset password token");
-        loginRequest.setResetPasswordToken(Optional.of(resetPasswordToken));
-        return loginRequest;
+        return resetPasswordToken;
     }
 }

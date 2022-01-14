@@ -10,6 +10,6 @@ public interface IUserService {
     LoginUser createUser(LoginUser loginUser);
     LoginUser resetPassword(LoginRequest loginRequest);
     LoginUser updateAccountStatus(LoginUser loginUser);
-    LoginUser authenticate(LoginRequest loginRequest, HttpServletResponse response);
-    LoginRequest generateResetPasswordToken(LoginRequest loginRequest);
+    void authenticate(LoginRequest loginRequest, HttpServletResponse response);
+    String generateResetPasswordToken(LoginRequest loginRequest);
 }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 
 @Service
-public class UserAuthenticationServiceImpl implements IUserAuthenticationService{
+public class UserAuthenticationServiceImpl implements IUserAuthenticationService {
 
     private AuthenticationManager authenticationManager;
 
@@ -52,8 +52,7 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
         return generateJwtToken(username);
     }
 
-    protected String generateJwtToken(String username)
-    {
+    protected String generateJwtToken(String username) {
         final UserDetails userDetails = jwtUserDetailsService
                 .loadUserByUsername(username);
         LoginUser loginUser = new LoginUser();
@@ -62,4 +61,14 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
 
         return token;
 
-    }}
+    }
+
+    @Override
+    public LoginUser getLoginUser(String username)  {
+        final UserDetails userDetails = jwtUserDetailsService
+                .loadUserByUsername(username);
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUsername(userDetails.getUsername());
+        return loginUser;
+    }
+}
