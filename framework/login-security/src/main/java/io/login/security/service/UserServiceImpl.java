@@ -65,7 +65,7 @@ public class UserServiceImpl implements IUserService{
 
         if(loginUser.getStatus() == UserStatus.ACTIVE) {
             try {
-                String jwtToken = userAuthenticationService.authenticate(loginUser.getUsername(), loginUser.getPassword());
+                String jwtToken = userAuthenticationService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
                 response.setHeader("Authorization", "Bearer " + jwtToken);
                 return;
             } catch (Exception e) {
@@ -83,5 +83,10 @@ public class UserServiceImpl implements IUserService{
         if(!flag)
             throw new RuntimeException("error while persisting reset password token");
         return resetPasswordToken;
+    }
+
+    @Override
+    public LoginUser getLoginUser(String username) {
+        return userAuthenticationService.getLoginUser(username);
     }
 }

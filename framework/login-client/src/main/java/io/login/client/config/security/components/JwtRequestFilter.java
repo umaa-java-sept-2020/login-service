@@ -50,10 +50,9 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Applicatio
         // do rest call
         String path = "/open-login/validate-jwt/";
         String url = securityConfigProvider.getLoginUrl() + path + requestTokenHeader;
-        LOGGER.info("do rest call to the endpoint: {} for validating the jwt token", url);
 
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-
+            LOGGER.info("do rest call to the endpoint: {} for validating the jwt token", url);
             UserAuthContext userAuthContext = restTemplate.exchange(url, HttpMethod.GET,null, UserAuthContext.class).getBody();
             UserDetails userDetails = userAuthContext;
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
@@ -61,6 +60,7 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Applicatio
             usernamePasswordAuthenticationToken
                     .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            LOGGER.info("security context initialized");
         }
         chain.doFilter(request, response);
     }

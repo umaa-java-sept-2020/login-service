@@ -22,14 +22,7 @@ public class OpenAuthenticationApiController {
     private Logger LOGGER = LoggerFactory.getLogger(OpenAuthenticationApiController.class);
     private IUserService userService;
 
-    private IUserAuthenticationService userAuthenticationService;
-
     private JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    public void setUserAuthenticationService(IUserAuthenticationService userAuthenticationService) {
-        this.userAuthenticationService = userAuthenticationService;
-    }
 
     @Autowired
     public void setJwtTokenUtil(JwtTokenUtil jwtTokenUtil) {
@@ -42,13 +35,14 @@ public class OpenAuthenticationApiController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<LoginUser> authenticate(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<Void> authenticate(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         this.userService.authenticate(loginRequest, response);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/validate-jwt/{jwt}")
-    public ResponseEntity<?> validateJwt(@PathVariable String jwt) {
+    public ResponseEntity<UserAuthContext> validateJwt(@PathVariable String jwt) {
+        LOGGER.info("validating the jwt");
         final String requestTokenHeader = jwt;
 
         String username = null;
@@ -72,7 +66,7 @@ public class OpenAuthenticationApiController {
         if(username == null || username.length() == 0)
           throw new RuntimeException("username is empty or null");
 
-        LoginUser loginUser = this.userAuthenticationService.getLoginUser(username);
+        LoginUser loginUser = this.userService.getLoginUser(username);
         UserAuthContext userAuthContext = new UserAuthContext(loginUser);
         return ResponseEntity.ok(userAuthContext);
     }
