@@ -56,7 +56,7 @@ public class UserDaoRepository implements IUserRepository {
 
     @Override
     public LoginUser updateUserStatus(LoginUser loginUser) {
-        jdbcTemplate.update(UPDATE_USER_STATUS_BY_USERNAME, new Object[]{loginUser.getUserStatus().name(), loginUser.getUsername()});
+        jdbcTemplate.update(UPDATE_USER_STATUS_BY_USERNAME, new Object[]{loginUser.getStatus().name(), loginUser.getUsername()});
         return getUserByUsername(loginUser.getUsername());
     }
 
@@ -93,7 +93,7 @@ public class UserDaoRepository implements IUserRepository {
             loginUser.setUuid(uuid);
             loginUser.setUsername(username);
             loginUser.setPassword(password);
-            loginUser.setUserStatus(UserStatus.valueOf(status));
+            loginUser.setStatus(UserStatus.valueOf(status));
             return loginUser;
         }
     }

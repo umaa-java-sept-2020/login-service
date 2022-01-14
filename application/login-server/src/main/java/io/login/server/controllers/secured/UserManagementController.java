@@ -1,7 +1,10 @@
 package io.login.server.controllers.secured;
 
-import io.login.client.models.UserRequest;
+import io.login.client.models.UserAuthContext;
+import io.login.client.models.UserAccount;
+import io.login.security.service.IUserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,15 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserManagementController {
 
+    private IUserService userService;
     @GetMapping("/user/{userId}")
-    public ResponseEntity<UserRequest> getUserInfo()
+    public ResponseEntity<UserAccount> getUserInfo()
     {
         return null;
     }
 
     @GetMapping("/user/me")
-    public ResponseEntity<UserRequest> getMyUserInfo(){
-        return null;
+    public ResponseEntity<UserAccount> getMyUserInfo(){
+        Object object = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserAuthContext userAuthContext = (UserAuthContext) object;
+        UserAccount userRequest = userAuthContext.getUserRequest();
+        return ResponseEntity.ok(userRequest);
     }
 
     /**
@@ -27,7 +34,7 @@ public class UserManagementController {
      * @return
      */
     @PostMapping("/register-admin")
-    public ResponseEntity<?> registerAdmin(@RequestBody UserRequest userRequest)
+    public ResponseEntity<?> registerAdmin(@RequestBody UserAccount userRequest)
     {
         return null;
     }
@@ -38,7 +45,7 @@ public class UserManagementController {
      * @return
      */
     @PostMapping("/register-user")
-    public ResponseEntity<?> registerUser(@RequestBody UserRequest userRequest)
+    public ResponseEntity<?> registerUser(@RequestBody UserAccount userRequest)
     {
         return null;
     }
