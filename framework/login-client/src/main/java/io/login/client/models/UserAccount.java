@@ -3,6 +3,7 @@ package io.login.client.models;
 
 import lombok.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Getter
@@ -10,12 +11,12 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class UserRequest {
+public class UserAccount {
 
     private String uuid;
-    private String accountId; // can be email or x12345
+    private String username; // can be email or x12345
     private String password;
-    private UserRole role;
+    private List<UserRole> roles;
     private UserStatus status;
     private Optional<UserProfile> userProfile;
 }
