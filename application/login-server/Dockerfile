@@ -1,4 +1,4 @@
-FROM tomcat:8.5.66-jdk8-corretto
+FROM tomcat:9.0.55-jdk8-corretto
 LABEL maintainer="rabindrapatra825@gmail.com"
 
 COPY setenv.sh /usr/local/tomcat/bin/
