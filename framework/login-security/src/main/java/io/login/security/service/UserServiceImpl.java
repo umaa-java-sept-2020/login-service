@@ -1,5 +1,6 @@
 package io.login.security.service;
 
+import io.login.client.models.UserAccount;
 import io.login.client.models.UserStatus;
 import io.login.security.dao.IUserRepository;
 import io.login.security.models.LoginRequest;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,11 +27,6 @@ public class UserServiceImpl implements IUserService{
     @Autowired
     public void setUserRepository(IUserRepository userRepository) {
         this.userRepository = userRepository;
-    }
-
-    @Override
-    public LoginUser createUser(LoginUser loginUser) {
-        return null;
     }
 
     @Override
@@ -83,6 +78,19 @@ public class UserServiceImpl implements IUserService{
         if(!flag)
             throw new RuntimeException("error while persisting reset password token");
         return resetPasswordToken;
+    }
+    String uuid = UUID.randomUUID().toString();
+    @Override
+    public void addUserIntoDB(UserAccount userRequest) {
+        userRequest.setUuid(uuid);
+        System.out.println("msg2");
+        this.userRepository.insertUserToDB(userRequest);
+    }
+
+    @Override
+    public void userRoleMapping(UserAccount userRequest) {
+        userRequest.setUuid(UUID.randomUUID().toString());
+        this.userRepository.insertIntoRoleMapping(userRequest);
     }
 
     @Override
