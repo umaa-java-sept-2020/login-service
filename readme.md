@@ -62,7 +62,7 @@ Make sure you successfully finished 1.1.
 ## 1.4.1 How to access swagger when running in tomcat:
 * Make sure you are done with 1.2.
 * Open http://{HOST}:{PORT}/{APP_NAME}/swagger-ui/index.html
-* Use {HOST}=localhost and {PORT}=8080. It may vary based upon your deployment.
+* Use {HOST}=localhost and {PORT}=8085. It may vary based upon your deployment.
 * Use {APP_NAME}=your war file name which is deployed in tomcat.
 
 ## 1.8 Build the code using shell script

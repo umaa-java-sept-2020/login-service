@@ -1,0 +1,21 @@
+version: '3'
+services:
+  web_app:
+    container_name: login_server
+    image: rkp201/login_server:latest
+    networks:
+      - metrics-nw
+    ports:
+      - 8081:8080
+    restart:
+      on-failure
+  database:
+    container_name: mysql_database
+    restart: always
+    image: mysql:8.0.25
+    networks:
+      - metrics-nw
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root_pass'
+networks:
+  metrics-nw: {}
