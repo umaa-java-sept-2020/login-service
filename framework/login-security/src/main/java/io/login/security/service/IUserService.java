@@ -1,5 +1,6 @@
 package io.login.security.service;
 
+import io.login.client.models.RoleUpdate;
 import io.login.client.models.UserAccount;
 import io.login.security.models.LoginRequest;
 import io.login.security.models.LoginUser;
@@ -9,7 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 public interface IUserService {
 
     void addUserIntoDB(UserAccount userRequest);
-    void userRoleMapping(UserAccount userRequest);
+    void saveUserRoleMapping(UserAccount userRequest);
+    void updateUserRole(RoleUpdate updateRole);
     LoginUser getLoginUser(String username);
     LoginUser resetPassword(LoginRequest loginRequest);
     LoginUser updateAccountStatus(LoginUser loginUser);

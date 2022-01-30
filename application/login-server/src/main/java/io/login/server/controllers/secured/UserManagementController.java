@@ -1,11 +1,10 @@
 package io.login.server.controllers.secured;
 
+import io.login.client.models.RoleUpdate;
 import io.login.client.models.UserAuthContext;
 import io.login.client.models.UserAccount;
-import io.login.security.dao.UserDaoRepository;
 import io.login.security.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,18 +50,14 @@ public class UserManagementController {
     @PostMapping("/register-user")
     public ResponseEntity<UserAccount> registerUserToDB(@RequestBody UserAccount userRequest)
     {
-        System.out.println("msg1");
         this.userService.addUserIntoDB(userRequest);
-//        new UserDaoRepository().insertUserToDB(userRequest);
-        this.userService.userRoleMapping(userRequest);
+        this.userService.saveUserRoleMapping(userRequest);
         return ResponseEntity.ok(userRequest);
     }
 
-//    @PostMapping
-//    public  ResponseEntity<UserAccount> userRollMapping(UserAccount userRequest)
-//    {
-//        this.userService.userRoleMapping(userRequest);
-//        return ResponseEntity.ok(userRequest);
-//    }
-
+    @PostMapping("/update-role")
+    public ResponseEntity<RoleUpdate> updateUserRole(@RequestBody RoleUpdate updateUserRole){
+        this.userService.updateUserRole(updateUserRole);
+        return ResponseEntity.ok(updateUserRole);
+    }
 }

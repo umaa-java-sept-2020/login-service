@@ -1,6 +1,8 @@
 package io.login.security.dao;
 
+import io.login.client.models.RoleUpdate;
 import io.login.client.models.UserAccount;
+import io.login.client.models.UserRole;
 import io.login.client.models.UserStatus;
 import io.login.security.models.LoginUser;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -35,6 +38,9 @@ public class UserDaoRepository implements IUserRepository {
     private static final String UPDATE_USER_STATUS_BY_USERNAME = "UPDATE TBL_LOGIN_USER SET STATUS=? WHERE USERNAME=?";
 
     private static final String GET_ROLE_UUID = "SELECT UUID FROM TBL_LOGIN_ROLE WHERE ROLE_NAME = ?";
+    private static final String DELETE_ROLES_ASSIGNED_TO_USER_BY_USER_UUID = "DELETE FROM TBL_LOGIN_USER_ROLE_MAPPING" +
+            " WHERE " +
+            "USER_UUID = ?";
 
     // private static final String SELECT_USER_BY_USERNAME = "SELECT * FROM TBL_LOGIN_USER WHERE USERNAME=?";
 
@@ -52,10 +58,10 @@ public class UserDaoRepository implements IUserRepository {
 
 
 
-    String[] getRoleUUIDFromRole(UserAccount userAccount){
-        String[] rolesUUID = new String[userAccount.getRoles().size()];
-        for (int i = 0; i < userAccount.getRoles().size(); i++){
-            Object[] objects = new Object[]{userAccount.getRoles().get(i).name()};
+    String[] getRoleUUIDFromRole(List<UserRole> roles){
+        String[] rolesUUID = new String[roles.size()];
+        for (int i = 0; i < roles.size(); i++){
+            Object[] objects = new Object[]{roles.get(i).name()};
             UserAccount userDetails  = this.jdbcTemplate.queryForObject(GET_ROLE_UUID, new RoleRowMapper(),
                     objects);
             System.out.println(userDetails);
@@ -65,38 +71,54 @@ public class UserDaoRepository implements IUserRepository {
     }
 
 
-    static String user_uuid = "";
     @Override
     public void insertUserToDB(UserAccount userRequest) {
-        System.out.println(userRequest.getUuid()+ userRequest.getUsername()+
+        System.out.println(userRequest.getUuid() + userRequest.getUsername()+
                 userRequest.getPassword()+
                 userRequest.getStatus().name());
         jdbcTemplate.update(SAVE_USER, new Object[]{userRequest.getUuid(), userRequest.getUsername(),
                 userRequest.getPassword(),
                 userRequest.getStatus().name()});
-        user_uuid = userRequest.getUuid();
     }
 
 
     @Override
     public void insertIntoRoleMapping(UserAccount userRequest) {
-        String[] rolesUUIDs =  getRoleUUIDFromRole(userRequest);
-        batchInsert(userRequest, rolesUUIDs);
+        List<UserRole> roles = userRequest.getRoles();
+        String[] rolesUUIDs =  getRoleUUIDFromRole(roles);
+        // deleteUSerRoleMapping(uuid, roleUUIDs);
+        batchInsert(userRequest.getUuid(), rolesUUIDs);
     }
 
-    private int[] batchInsert(UserAccount userRequest, String[] uuids) {
-        return this.jdbcTemplate.batchUpdate(SAVE_USER_TO_USER_ROLE_MAPPING, new BatchPreparedStatementSetter() {
+    @Override
+    public RoleUpdate updateUSerRoleInDB(RoleUpdate updateRole) {
+        deleteUSerRoleMapping(updateRole.getUserName());
+        Object[] objects = new Object[]{updateRole.getUserName()};
+        LoginUser loginUser = jdbcTemplate.queryForObject(SELECT_USER_BY_USERNAME, new UserRowMapper(), objects);
+        String uuid = loginUser.getUuid();
+        System.out.println("uuid - "+uuid);
+        String[] rolesUUIDs = getRoleUUIDFromRole(updateRole.getUserRole());
+        batchInsert(uuid, rolesUUIDs);
+        return updateRole;
+    }
+    void deleteUSerRoleMapping(String userName){
+        Object[] objects = new Object[]{userName};
+        LoginUser loginUser = jdbcTemplate.queryForObject(SELECT_USER_BY_USERNAME, new UserRowMapper(), objects);
+        String uuid = loginUser.getUuid();
+        jdbcTemplate.update(DELETE_ROLES_ASSIGNED_TO_USER_BY_USER_UUID, uuid);
+    }
+    private int[] batchInsert(String userUUID, String[] roleUUIDs) {
+        return jdbcTemplate.batchUpdate(SAVE_USER_TO_USER_ROLE_MAPPING, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
-                userRequest.setUuid(UUID.randomUUID().toString());
-                ps.setString(1, userRequest.getUuid());
-                ps.setString(2, user_uuid);
-                ps.setString(3, uuids[i]);
+                ps.setString(1, UUID.randomUUID().toString());
+                ps.setString(2, userUUID);
+                ps.setString(3, roleUUIDs[i]);
             }
 
             @Override
             public int getBatchSize() {
-                return userRequest.getRoles().size();
+                return roleUUIDs.length;
             }
         });
     }

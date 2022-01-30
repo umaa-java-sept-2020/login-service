@@ -1,5 +1,6 @@
 package io.login.security.service;
 
+import io.login.client.models.RoleUpdate;
 import io.login.client.models.UserAccount;
 import io.login.client.models.UserStatus;
 import io.login.security.dao.IUserRepository;
@@ -79,18 +80,23 @@ public class UserServiceImpl implements IUserService{
             throw new RuntimeException("error while persisting reset password token");
         return resetPasswordToken;
     }
-    String uuid = UUID.randomUUID().toString();
+
     @Override
     public void addUserIntoDB(UserAccount userRequest) {
+        String uuid = UUID.randomUUID().toString();
         userRequest.setUuid(uuid);
         System.out.println("msg2");
         this.userRepository.insertUserToDB(userRequest);
     }
 
     @Override
-    public void userRoleMapping(UserAccount userRequest) {
-        userRequest.setUuid(UUID.randomUUID().toString());
+    public void saveUserRoleMapping(UserAccount userRequest) {
         this.userRepository.insertIntoRoleMapping(userRequest);
+    }
+
+    @Override
+    public void updateUserRole(RoleUpdate updateRole) {
+        this.userRepository.updateUSerRoleInDB(updateRole);
     }
 
     @Override
