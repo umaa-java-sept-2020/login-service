@@ -6,6 +6,7 @@ import io.login.security.models.LoginRequest;
 import io.login.security.models.LoginUser;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public interface IUserService {
 
@@ -15,6 +16,6 @@ public interface IUserService {
     LoginUser getLoginUser(String username);
     LoginUser resetPassword(LoginRequest loginRequest);
     LoginUser updateAccountStatus(LoginUser loginUser);
-    void authenticate(LoginRequest loginRequest, HttpServletResponse response);
+    String authenticate(LoginRequest loginRequest, HttpServletResponse response);
     String generateResetPasswordToken(LoginRequest loginRequest);
 }

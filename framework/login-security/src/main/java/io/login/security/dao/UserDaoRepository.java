@@ -130,7 +130,11 @@ public class UserDaoRepository implements IUserRepository {
     @Override
     public LoginUser getUserByUsername(String username) {
         Object[] objects = new Object[]{username};
-        return jdbcTemplate.queryForObject(SELECT_USER_BY_USERNAME, new UserRowMapper(), objects);
+        System.out.println("username - "+username);
+        LoginUser l = jdbcTemplate.queryForObject(SELECT_USER_BY_USERNAME, new UserRowMapper(), objects);
+        System.out.println(l.getUsername());
+        System.out.println(l.getPassword());
+        return l;
     }
 
     @Override
