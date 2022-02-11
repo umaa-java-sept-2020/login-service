@@ -12,9 +12,11 @@ import java.util.Collection;
 public class UserAuthContext implements UserDetails {
 
     private UserAccount userRequest;
+    private UserDetails userDetails;
 
-    public UserAuthContext(UserAccount userRequest) {
+    public UserAuthContext(UserAccount userRequest, UserDetails userDetails) {
         this.userRequest = userRequest;
+        this.userDetails = userDetails;
     }
 
     @Override
@@ -24,31 +26,34 @@ public class UserAuthContext implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        if(this.userDetails==null)
+            return null;
+            return userDetails.getPassword();
     }
 
     @Override
-    public String getUsername() {
+    public String getUsername()
+    {
         return userRequest.getUsername();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }
