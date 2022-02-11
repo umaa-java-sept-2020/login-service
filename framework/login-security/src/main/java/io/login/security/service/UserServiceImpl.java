@@ -67,8 +67,8 @@ public class UserServiceImpl implements IUserService{
             try {
                 String jwtToken = userAuthenticationService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
                 response.setHeader("Authorization", "Bearer " + jwtToken);
-                response.getWriter().write("Authorization"+ "Bearer " + jwtToken);
-                return jwtToken;
+                // response.getWriter().write("Authorization"+ "Bearer " + jwtToken);
+                return "Bearer "+jwtToken;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
