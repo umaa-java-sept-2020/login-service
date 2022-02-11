@@ -67,7 +67,7 @@ public class OpenAuthenticationApiController {
           throw new RuntimeException("username is empty or null");
 
         LoginUser loginUser = this.userService.getLoginUser(username);
-        UserAuthContext userAuthContext = new UserAuthContext(loginUser);
+        UserAuthContext userAuthContext = new UserAuthContext(loginUser,null);
         return ResponseEntity.ok(userAuthContext);
     }
 

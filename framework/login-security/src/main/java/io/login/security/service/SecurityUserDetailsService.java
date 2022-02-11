@@ -1,5 +1,6 @@
 package io.login.security.service;
 
+import io.login.client.models.UserAuthContext;
 import io.login.client.models.UserStatus;
 import io.login.security.dao.IUserRepository;
 import io.login.security.models.LoginUser;
@@ -35,8 +36,9 @@ public class SecurityUserDetailsService implements UserDetailsService {
         }
 
         if (loginUser != null) {
-            return new User(loginUser.getUsername(),loginUser.getPassword(),
+            UserDetails userDetails = new User(loginUser.getUsername(),loginUser.getPassword(),
                     new ArrayList<>());
+            return new UserAuthContext(loginUser,userDetails);
         } else {
             throw new UsernameNotFoundException("LoginUser not found with username: " + username);
         }
