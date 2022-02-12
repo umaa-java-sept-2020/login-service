@@ -1,16 +1,19 @@
 package io.login.security.service;
 
+import io.login.client.models.RoleUpdate;
+
 import io.login.client.models.UserAccount;
 import io.login.client.models.UserStatus;
 import io.login.security.dao.IUserRepository;
 import io.login.security.models.LoginRequest;
 import io.login.security.models.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -28,11 +31,6 @@ public class UserServiceImpl implements IUserService{
     @Autowired
     public void setUserRepository(IUserRepository userRepository) {
         this.userRepository = userRepository;
-    }
-
-    @Override
-    public LoginUser createUser(LoginUser loginUser) {
-        return null;
     }
 
     @Override
@@ -56,19 +54,22 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
-    public void authenticate(LoginRequest loginRequest, HttpServletResponse response) {
+    public String authenticate(LoginRequest loginRequest, HttpServletResponse response) {
         LoginUser loginUser = this.userRepository.getUserByUsername(loginRequest.getUsername());
         if(loginUser.getStatus() == UserStatus.DRAFT){
           String token  =  generateResetPasswordToken(loginRequest);
           response.setHeader("resetPasswordToken", token);
-          return;
+////          response.getWriter().write("resetPasswordToken"+ token);
+//            ResponseEntity.status(204).body("resetPasswordToken"+ token);
+          return token;
         }
 
         if(loginUser.getStatus() == UserStatus.ACTIVE) {
             try {
                 String jwtToken = userAuthenticationService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
                 response.setHeader("Authorization", "Bearer " + jwtToken);
-                return;
+                // response.getWriter().write("Authorization"+ "Bearer " + jwtToken);
+                return "Bearer "+jwtToken;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -87,7 +88,25 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
+
     public UserAccount getLoginUser(String username) {
-        return userAuthenticationService.getLoginUser(username);
+   return userAuthenticationService.getLoginUser(username);
+    }
+
+    public void addUserIntoDB(UserAccount userRequest) {
+        String uuid = UUID.randomUUID().toString();
+        userRequest.setUuid(uuid);
+        System.out.println("msg2");
+        this.userRepository.insertUserToDB(userRequest);
+    }
+
+    @Override
+    public void saveUserRoleMapping(UserAccount userRequest) {
+        this.userRepository.insertIntoRoleMapping(userRequest);
+    }
+
+    @Override
+    public void updateUserRole(RoleUpdate updateRole) {
+        this.userRepository.updateUSerRoleInDB(updateRole);
     }
 }

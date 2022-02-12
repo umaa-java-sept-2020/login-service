@@ -15,8 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RestController
+@CrossOrigin("http://localhost:4300")
 @RequestMapping("/open-login")
 public class OpenAuthenticationApiController {
 
@@ -36,9 +38,11 @@ public class OpenAuthenticationApiController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<Void> authenticate(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        this.userService.authenticate(loginRequest, response);
-        return ResponseEntity.noContent().build();
+    public String authenticate(@RequestBody LoginRequest loginRequest,
+                                                    HttpServletResponse response){
+        return this.userService.authenticate(loginRequest, response);
+//        response.getWriter().write("resetPasswordToken"+loginRequest.getResetPasswordToken());
+//        return ResponseEntity.ok(loginRequest);
     }
 
     @GetMapping("/validate-jwt/{jwt}")
@@ -66,6 +70,7 @@ public class OpenAuthenticationApiController {
 
         if(username == null || username.length() == 0)
           throw new RuntimeException("username is empty or null");
+
 
         UserAccount loginUser = this.userService.getLoginUser(username);
         loginUser.setPassword("*****");
