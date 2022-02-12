@@ -1,6 +1,7 @@
 package io.login.security.service;
 
 import io.login.client.models.RoleUpdate;
+
 import io.login.client.models.UserAccount;
 import io.login.client.models.UserStatus;
 import io.login.security.dao.IUserRepository;
@@ -87,6 +88,11 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
+
+    public UserAccount getLoginUser(String username) {
+   return userAuthenticationService.getLoginUser(username);
+    }
+
     public void addUserIntoDB(UserAccount userRequest) {
         String uuid = UUID.randomUUID().toString();
         userRequest.setUuid(uuid);
@@ -102,10 +108,5 @@ public class UserServiceImpl implements IUserService{
     @Override
     public void updateUserRole(RoleUpdate updateRole) {
         this.userRepository.updateUSerRoleInDB(updateRole);
-    }
-
-    @Override
-    public LoginUser getLoginUser(String username) {
-        return userAuthenticationService.getLoginUser(username);
     }
 }
