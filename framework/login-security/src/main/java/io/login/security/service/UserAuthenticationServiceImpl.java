@@ -1,5 +1,7 @@
 package io.login.security.service;
 
+import io.login.client.models.UserAccount;
+import io.login.client.models.UserAuthContext;
 import io.login.security.models.LoginUser;
 import io.login.security.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,11 +66,11 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
     }
 
     @Override
-    public LoginUser getLoginUser(String username)  {
+    public UserAccount getLoginUser(String username)  {
         final UserDetails userDetails = jwtUserDetailsService
                 .loadUserByUsername(username);
-        LoginUser loginUser = new LoginUser();
-        loginUser.setUsername(userDetails.getUsername());
+        UserAuthContext userAuthContext = (UserAuthContext) userDetails;
+        UserAccount loginUser = userAuthContext.getUserRequest();
         return loginUser;
     }
 }

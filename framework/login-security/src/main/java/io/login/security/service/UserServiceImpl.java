@@ -1,5 +1,6 @@
 package io.login.security.service;
 
+import io.login.client.models.UserAccount;
 import io.login.client.models.UserStatus;
 import io.login.security.dao.IUserRepository;
 import io.login.security.models.LoginRequest;
@@ -86,7 +87,7 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
-    public LoginUser getLoginUser(String username) {
+    public UserAccount getLoginUser(String username) {
         return userAuthenticationService.getLoginUser(username);
     }
 }

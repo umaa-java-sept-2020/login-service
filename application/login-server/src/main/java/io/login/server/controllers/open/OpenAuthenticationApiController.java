@@ -1,6 +1,7 @@
 package io.login.server.controllers.open;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.login.client.models.UserAccount;
 import io.login.client.models.UserAuthContext;
 import io.login.security.models.LoginRequest;
 import io.login.security.models.LoginUser;
@@ -66,7 +67,8 @@ public class OpenAuthenticationApiController {
         if(username == null || username.length() == 0)
           throw new RuntimeException("username is empty or null");
 
-        LoginUser loginUser = this.userService.getLoginUser(username);
+        UserAccount loginUser = this.userService.getLoginUser(username);
+        loginUser.setPassword("*****");
         UserAuthContext userAuthContext = new UserAuthContext(loginUser,null);
         return ResponseEntity.ok(userAuthContext);
     }
