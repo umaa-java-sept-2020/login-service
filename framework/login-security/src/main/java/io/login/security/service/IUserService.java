@@ -11,8 +11,6 @@ import java.io.IOException;
 
 public interface IUserService {
 
-
-    LoginUser createUser(LoginUser loginUser);
     UserAccount getLoginUser(String username);
     void addUserIntoDB(UserAccount userRequest);
     void saveUserRoleMapping(UserAccount userRequest);

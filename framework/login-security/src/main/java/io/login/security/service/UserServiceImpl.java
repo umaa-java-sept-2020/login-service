@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
-public class UserServiceImpl implements IUserService{
+public class UserServiceImpl implements IUserService {
 
     private IUserRepository userRepository;
 
@@ -36,7 +36,7 @@ public class UserServiceImpl implements IUserService{
     @Override
     @Transactional
     public LoginUser resetPassword(LoginRequest loginRequest) {
-        if(1==this.userRepository.getResetPasswordTokenCount(loginRequest.getUsername(), loginRequest.getResetPasswordToken().get())) {
+        if (1 == this.userRepository.getResetPasswordTokenCount(loginRequest.getUsername(), loginRequest.getResetPasswordToken().get())) {
             LoginUser loginUser = this.userRepository.getUserByUsername(loginRequest.getUsername());
             loginUser.setPassword(loginRequest.getPassword());
             this.userRepository.updateUserPassword(loginUser);// update
@@ -56,33 +56,33 @@ public class UserServiceImpl implements IUserService{
     @Override
     public String authenticate(LoginRequest loginRequest, HttpServletResponse response) {
         LoginUser loginUser = this.userRepository.getUserByUsername(loginRequest.getUsername());
-        if(loginUser.getStatus() == UserStatus.DRAFT){
-          String token  =  generateResetPasswordToken(loginRequest);
-          response.setHeader("resetPasswordToken", token);
+        if (loginUser.getStatus() == UserStatus.DRAFT) {
+            String token = generateResetPasswordToken(loginRequest);
+            response.setHeader("resetPasswordToken", token);
 ////          response.getWriter().write("resetPasswordToken"+ token);
 //            ResponseEntity.status(204).body("resetPasswordToken"+ token);
-          return token;
+            return token;
         }
 
-        if(loginUser.getStatus() == UserStatus.ACTIVE) {
+        if (loginUser.getStatus() == UserStatus.ACTIVE) {
             try {
                 String jwtToken = userAuthenticationService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
                 response.setHeader("Authorization", "Bearer " + jwtToken);
                 // response.getWriter().write("Authorization"+ "Bearer " + jwtToken);
-                return "Bearer "+jwtToken;
+                return "Bearer " + jwtToken;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
-        throw new RuntimeException("operation not allowed. user status is: "+loginUser.getStatus().name());
+        throw new RuntimeException("operation not allowed. user status is: " + loginUser.getStatus().name());
     }
 
     @Override
     public String generateResetPasswordToken(LoginRequest loginRequest) {
         String resetPasswordToken = UUID.randomUUID().toString();
-        boolean flag =this.userRepository.saveResetPasswordToken(loginRequest.getUsername(), resetPasswordToken);
-        if(!flag)
+        boolean flag = this.userRepository.saveResetPasswordToken(loginRequest.getUsername(), resetPasswordToken);
+        if (!flag)
             throw new RuntimeException("error while persisting reset password token");
         return resetPasswordToken;
     }
@@ -90,7 +90,7 @@ public class UserServiceImpl implements IUserService{
     @Override
 
     public UserAccount getLoginUser(String username) {
-   return userAuthenticationService.getLoginUser(username);
+        return userAuthenticationService.getLoginUser(username);
     }
 
     public void addUserIntoDB(UserAccount userRequest) {

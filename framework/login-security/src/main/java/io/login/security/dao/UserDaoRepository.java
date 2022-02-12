@@ -96,7 +96,6 @@ public class UserDaoRepository implements IUserRepository {
         Object[] objects = new Object[]{updateRole.getUserName()};
         LoginUser loginUser = jdbcTemplate.queryForObject(SELECT_USER_BY_USERNAME, new UserRowMapper(), objects);
         String uuid = loginUser.getUuid();
-        System.out.println("uuid - "+uuid);
         String[] rolesUUIDs = getRoleUUIDFromRole(updateRole.getUserRole());
         batchInsert(uuid, rolesUUIDs);
         return updateRole;
@@ -130,10 +129,7 @@ public class UserDaoRepository implements IUserRepository {
     @Override
     public LoginUser getUserByUsername(String username) {
         Object[] objects = new Object[]{username};
-        System.out.println("username - "+username);
         LoginUser l = jdbcTemplate.queryForObject(SELECT_USER_BY_USERNAME, new UserRowMapper(), objects);
-        System.out.println(l.getUsername());
-        System.out.println(l.getPassword());
         return l;
     }
 
