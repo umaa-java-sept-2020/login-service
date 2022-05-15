@@ -49,7 +49,8 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
         } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+//            throw new Exception("INVALID_CREDENTIALS", e);
+            throw e;
         }
         return generateJwtToken(username);
     }

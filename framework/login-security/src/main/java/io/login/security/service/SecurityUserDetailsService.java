@@ -38,6 +38,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
         if (loginUser != null) {
             UserDetails userDetails = new User(loginUser.getUsername(),loginUser.getPassword(),
                     new ArrayList<>());
+            System.out.println("loginUSer - "+loginUser.getUsername()+"pass - "+loginUser.getPassword());
             return new UserAuthContext(loginUser,userDetails);
         } else {
             throw new UsernameNotFoundException("LoginUser not found with username: " + username);

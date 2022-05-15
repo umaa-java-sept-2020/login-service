@@ -3,6 +3,7 @@ package io.login.server.controllers.open;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.login.client.models.UserAccount;
 import io.login.client.models.UserAuthContext;
+import io.login.security.dao.IUserRepository;
 import io.login.security.models.LoginRequest;
 import io.login.security.models.LoginUser;
 import io.login.security.service.IUserAuthenticationService;
@@ -18,12 +19,19 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
-@CrossOrigin("http://localhost:4300")
+@CrossOrigin("http://localhost:4200")
 @RequestMapping("/open-login")
 public class OpenAuthenticationApiController {
 
     private Logger LOGGER = LoggerFactory.getLogger(OpenAuthenticationApiController.class);
     private IUserService userService;
+
+    private IUserRepository userRepository;
+
+    @Autowired
+    public void setUserRepository(IUserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     private JwtTokenUtil jwtTokenUtil;
 
@@ -73,6 +81,7 @@ public class OpenAuthenticationApiController {
 
         UserAccount loginUser = this.userService.getLoginUser(username);
         loginUser.setPassword("*****");
+        loginUser.setRoles(this.userRepository.getRoles(username))  ;
         UserAuthContext userAuthContext = new UserAuthContext(loginUser,null);
         return ResponseEntity.ok(userAuthContext);
     }

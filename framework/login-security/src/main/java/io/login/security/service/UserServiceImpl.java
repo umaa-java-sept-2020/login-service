@@ -1,19 +1,18 @@
 package io.login.security.service;
 
-import io.login.client.models.RoleUpdate;
+import io.login.client.models.*;
 
-import io.login.client.models.UserAccount;
-import io.login.client.models.UserStatus;
 import io.login.security.dao.IUserRepository;
 import io.login.security.models.LoginRequest;
 import io.login.security.models.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -70,6 +69,12 @@ public class UserServiceImpl implements IUserService {
                 response.setHeader("Authorization", "Bearer " + jwtToken);
                 // response.getWriter().write("Authorization"+ "Bearer " + jwtToken);
                 return "Bearer " + jwtToken;
+            } catch (BadCredentialsException e) {
+                ErrorModel errorModel = new ErrorModel();
+                errorModel.setHttpStatusCode(401);
+                errorModel.setApplicationErrorCode(12341);
+                errorModel.setUserInterfaceMessage("username or password incorrect");
+                throw new LoginAppException(errorModel, e);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -88,16 +93,26 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public List<UserAccount> getUserRole() {
+        return null;
+    }
 
+    @Override
     public UserAccount getLoginUser(String username) {
         return userAuthenticationService.getLoginUser(username);
     }
 
-    public void addUserIntoDB(UserAccount userRequest) {
+    public void createUser(UserAccount userRequest) {
         String uuid = UUID.randomUUID().toString();
         userRequest.setUuid(uuid);
-        System.out.println("msg2");
-        this.userRepository.insertUserToDB(userRequest);
+        try {
+            this.userRepository.insertUser(userRequest);
+        } catch (DuplicateKeyException e) {
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setApplicationErrorCode(12341);
+            errorModel.setUserInterfaceMessage("duplicate username requested");
+            throw new LoginAppException(errorModel, e);
+        }
     }
 
     @Override
@@ -108,5 +123,15 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void updateUserRole(RoleUpdate updateRole) {
         this.userRepository.updateUSerRoleInDB(updateRole);
+    }
+
+    @Override
+    public void createUserProfileDetails(UserProfile userProfile) {
+        this.userRepository.insertUserProfileDetails(userProfile);
+    }
+
+    @Override
+    public void updateUserProfileDetails(UserProfile userProfile) {
+        this.userRepository.updateUserProfileDetails(userProfile);
     }
 }

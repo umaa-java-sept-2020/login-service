@@ -21,8 +21,8 @@ INSERT INTO TBL_LOGIN_USER VALUES
 );
 
 INSERT INTO TBL_LOGIN_ROLE VALUES
-('role-uuid1','ADMIN');
-('role-uuid1','USER');
+('role-uuid1','ADMIN'),
+('role-uuid2','USER');
 
 INSERT INTO TBL_LOGIN_USER_ROLE_MAPPING VALUES
 ('user-role-uuid1','user-uuid1','role-uuid1'),
