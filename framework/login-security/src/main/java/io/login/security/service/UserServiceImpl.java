@@ -6,6 +6,8 @@ import io.login.security.dao.IUserRepository;
 import io.login.security.models.LoginRequest;
 import io.login.security.models.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +69,12 @@ public class UserServiceImpl implements IUserService {
                 response.setHeader("Authorization", "Bearer " + jwtToken);
                 // response.getWriter().write("Authorization"+ "Bearer " + jwtToken);
                 return "Bearer " + jwtToken;
+            } catch (BadCredentialsException e) {
+                ErrorModel errorModel = new ErrorModel();
+                errorModel.setHttpStatusCode(401);
+                errorModel.setApplicationErrorCode(12341);
+                errorModel.setUserInterfaceMessage("username or password incorrect");
+                throw new LoginAppException(errorModel, e);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -86,7 +94,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public List<UserAccount> getUserRole() {
-        
+        return null;
     }
 
     @Override
@@ -97,7 +105,14 @@ public class UserServiceImpl implements IUserService {
     public void createUser(UserAccount userRequest) {
         String uuid = UUID.randomUUID().toString();
         userRequest.setUuid(uuid);
-        this.userRepository.insertUser(userRequest);
+        try {
+            this.userRepository.insertUser(userRequest);
+        } catch (DuplicateKeyException e) {
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setApplicationErrorCode(12341);
+            errorModel.setUserInterfaceMessage("duplicate username requested");
+            throw new LoginAppException(errorModel, e);
+        }
     }
 
     @Override
