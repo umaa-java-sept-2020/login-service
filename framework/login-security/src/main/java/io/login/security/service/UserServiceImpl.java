@@ -1,19 +1,16 @@
 package io.login.security.service;
 
-import io.login.client.models.RoleUpdate;
+import io.login.client.models.*;
 
-import io.login.client.models.UserAccount;
-import io.login.client.models.UserStatus;
 import io.login.security.dao.IUserRepository;
 import io.login.security.models.LoginRequest;
 import io.login.security.models.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -88,16 +85,19 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public List<UserAccount> getUserRole() {
+        
+    }
 
+    @Override
     public UserAccount getLoginUser(String username) {
         return userAuthenticationService.getLoginUser(username);
     }
 
-    public void addUserIntoDB(UserAccount userRequest) {
+    public void createUser(UserAccount userRequest) {
         String uuid = UUID.randomUUID().toString();
         userRequest.setUuid(uuid);
-        System.out.println("msg2");
-        this.userRepository.insertUserToDB(userRequest);
+        this.userRepository.insertUser(userRequest);
     }
 
     @Override
@@ -108,5 +108,15 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void updateUserRole(RoleUpdate updateRole) {
         this.userRepository.updateUSerRoleInDB(updateRole);
+    }
+
+    @Override
+    public void createUserProfileDetails(UserProfile userProfile) {
+        this.userRepository.insertUserProfileDetails(userProfile);
+    }
+
+    @Override
+    public void updateUserProfileDetails(UserProfile userProfile) {
+        this.userRepository.updateUserProfileDetails(userProfile);
     }
 }

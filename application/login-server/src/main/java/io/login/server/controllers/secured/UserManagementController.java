@@ -1,30 +1,29 @@
 package io.login.server.controllers.secured;
 
-import io.login.client.models.RoleUpdate;
-import io.login.client.models.UserAuthContext;
-import io.login.client.models.UserAccount;
+import io.login.client.models.*;
 import io.login.security.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.StringTokenizer;
 
 @RestController
+@CrossOrigin("http://localhost:4200")
 public class UserManagementController {
     @Autowired
     private IUserService userService;
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<UserAccount> getUserInfo()
-    {
+    public ResponseEntity<UserAccount> getUserInfo() {
         return null;
     }
 
     @GetMapping("/user/me")
-    public ResponseEntity<UserAccount> getMyUserInfo(){
+    public ResponseEntity<UserAccount> getMyUserInfo() {
         Object object = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserAuthContext userAuthContext = (UserAuthContext) object;
         UserAccount userRequest = userAuthContext.getUserRequest();
@@ -34,30 +33,53 @@ public class UserManagementController {
     /**
      * only an ACTIVE admin can register another admin.
      * The new user state must be DRAFT and ROLE is ADMIN
+     *
      * @return
      */
     @PostMapping("/register-admin")
-    public ResponseEntity<?> registerAdmin(@RequestBody UserAccount userRequest)
-    {
+    public ResponseEntity<?> registerAdmin(@RequestBody UserAccount userRequest) {
         return null;
     }
 
     /**
      * only an ACTIVE admin can register another admin.
      * The new user state must be DRAFT and ROLE is USER
+     *
      * @return
      */
     @PostMapping("/register-user")
-    public ResponseEntity<UserAccount> registerUserToDB(@RequestBody UserAccount userRequest)
-    {
-        this.userService.addUserIntoDB(userRequest);
+    @Transactional
+    public ResponseEntity<UserAccount> registerUser(@RequestBody UserAccount userRequest) {
+        this.userService.createUser(userRequest);
         this.userService.saveUserRoleMapping(userRequest);
         return ResponseEntity.ok(userRequest);
     }
 
     @PostMapping("/update-role")
-    public ResponseEntity<RoleUpdate> updateUserRole(@RequestBody RoleUpdate updateUserRole){
+    public ResponseEntity<RoleUpdate> updateUserRole(@RequestBody RoleUpdate updateUserRole) {
         this.userService.updateUserRole(updateUserRole);
         return ResponseEntity.ok(updateUserRole);
     }
+
+    @PostMapping("/user-profile-details")
+    public ResponseEntity<UserProfile> createUserProfile(@RequestBody UserProfile userProfile) {
+        this.userService.createUserProfileDetails(userProfile);
+        return ResponseEntity.ok(userProfile);
+    }
+
+    @PutMapping("/update-user-profile-details/{uuid}")
+    public ResponseEntity<UserProfile> getResourceByUUID(@RequestBody UserProfile userProfile,
+                                                         @PathVariable("uuid") String uuid){
+        this.userService.updateUserProfileDetails(userProfile);
+        return ResponseEntity.ok(userProfile);
+    }
+
+    @GetMapping("/get-role")
+    public ResponseEntity<List<UserAccount>> getDetails()
+    {
+        List<UserAccount> userAccounts  = this.userService.getUserRole();
+        return ResponseEntity.ok(userAccounts);
+    }
+
+
 }
