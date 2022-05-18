@@ -82,6 +82,7 @@ public class OpenAuthenticationApiController {
         UserAccount loginUser = this.userService.getLoginUser(username);
         loginUser.setPassword("*****");
         loginUser.setRoles(this.userRepository.getRoles(username))  ;
+//        loginUser.setUserProfile(); // fromDAO
         UserAuthContext userAuthContext = new UserAuthContext(loginUser,null);
         return ResponseEntity.ok(userAuthContext);
     }

@@ -1,5 +1,6 @@
 package io.login.security.service;
 
+import io.login.client.config.security.components.NoEncryptPasswordEncoder;
 import io.login.client.models.*;
 
 import io.login.security.dao.IUserRepository;
@@ -54,13 +55,41 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public String authenticate(LoginRequest loginRequest, HttpServletResponse response) {
-        LoginUser loginUser = this.userRepository.getUserByUsername(loginRequest.getUsername());
+        LoginUser loginUser = null;
+        try {
+            loginUser = this.userRepository.getUserByUsername(loginRequest.getUsername());
+        } catch (Exception e){
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setHttpStatusCode(401);
+            errorModel.setApplicationErrorCode(12341);
+            errorModel.setUserInterfaceMessage("username not found !");
+            throw new LoginAppException(errorModel, e);
+        }
+        if (loginUser.getStatus() == UserStatus.INACTIVE){
+            // generateOTP
+            //      generate a no between 1000 to 10,000 and display here
+            // saveOTP in DB tbl : tbl_save_OTP - userName, OTP, long Timestamp
+            // getUserProfile from DBm send OTP sms to mobile No
+            // return a string called OTPSent_resetPasswordOTPScreen (crying snake)
+
+        }
         if (loginUser.getStatus() == UserStatus.DRAFT) {
-            String token = generateResetPasswordToken(loginRequest);
-            response.setHeader("resetPasswordToken", token);
+                String token = generateResetPasswordToken(loginRequest);
+                // compare password of login request and login user, using NoEncryptPasswordEncoder
+                boolean flag = new NoEncryptPasswordEncoder().matches(loginUser.getPassword(),
+                        loginRequest.getPassword());
+                if (!flag){
+                    //error handling
+                    ErrorModel errorModel = new ErrorModel();
+                    errorModel.setHttpStatusCode(401);
+                    errorModel.setApplicationErrorCode(12341);
+                    errorModel.setUserInterfaceMessage("Default Password incorrect");
+                    throw new LoginAppException(errorModel);
+                }
+                response.setHeader("resetPasswordToken", token);
 ////          response.getWriter().write("resetPasswordToken"+ token);
 //            ResponseEntity.status(204).body("resetPasswordToken"+ token);
-            return token;
+                return token;
         }
 
         if (loginUser.getStatus() == UserStatus.ACTIVE) {

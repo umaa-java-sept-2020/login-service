@@ -9,11 +9,13 @@ public class LoginAppException extends RuntimeException {
     private ErrorModel errorModel;
     private Throwable throwable;
 
-    // when actual exception occurs, that means e is not null
+    // when actual exception occurs, that means throwable is not null
     public LoginAppException(ErrorModel errorModel, Throwable throwable) {
         super(throwable.getMessage());
         this.errorModel = errorModel;
         this.throwable = throwable;
+        // setting global error message, any exception occures the controller will move to
+        // LoginAppException class and set the respective fields of ErrorModel Class
         this.errorModel.setErrorMessage(throwable.getMessage());
     }
 
