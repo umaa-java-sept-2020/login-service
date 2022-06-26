@@ -18,5 +18,5 @@ public class UserAccount {
     private String password;
     private List<UserRole> roles;
     private UserStatus status;
-    private Optional<UserProfile> userProfile;
+    private UserProfile userProfile;
 }

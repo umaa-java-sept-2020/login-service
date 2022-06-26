@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.StringTokenizer;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
@@ -68,10 +67,25 @@ public class UserManagementController {
     }
 
     @PutMapping("/update-user-profile-details/{uuid}")
-    public ResponseEntity<UserProfile> getResourceByUUID(@RequestBody UserProfile userProfile,
+    public ResponseEntity<UserProfile> updateResourceByUUID(@RequestBody UserProfile userProfile,
                                                          @PathVariable("uuid") String uuid){
         this.userService.updateUserProfileDetails(userProfile);
         return ResponseEntity.ok(userProfile);
+    }
+
+    @GetMapping("/get-user-profile/{username}")
+    public ResponseEntity<UserProfile> getResource(@PathVariable("username") String userName) {
+        UserProfile userProfile = null;
+        try {
+            userProfile = this.userService.getUserProfileDetails(userName);
+            return ResponseEntity.ok(userProfile);
+        } catch (Exception e) {
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setHttpStatusCode(500);
+            errorModel.setApplicationErrorCode(12341);
+            errorModel.setUserInterfaceMessage("User Profile details not set for the user");
+            throw new LoginAppException(errorModel, e);
+        }
     }
 
     @GetMapping("/get-role")
@@ -80,6 +94,4 @@ public class UserManagementController {
         List<UserAccount> userAccounts  = this.userService.getUserRole();
         return ResponseEntity.ok(userAccounts);
     }
-
-
 }

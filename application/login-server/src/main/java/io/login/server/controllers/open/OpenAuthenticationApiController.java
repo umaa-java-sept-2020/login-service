@@ -1,22 +1,22 @@
 package io.login.server.controllers.open;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.login.client.models.OtpUser;
 import io.login.client.models.UserAccount;
 import io.login.client.models.UserAuthContext;
 import io.login.security.dao.IUserRepository;
 import io.login.security.models.LoginRequest;
 import io.login.security.models.LoginUser;
-import io.login.security.service.IUserAuthenticationService;
 import io.login.security.service.IUserService;
 import io.login.security.utils.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
@@ -47,7 +47,7 @@ public class OpenAuthenticationApiController {
 
     @PostMapping("/authenticate")
     public String authenticate(@RequestBody LoginRequest loginRequest,
-                                                    HttpServletResponse response){
+                               HttpServletResponse response) {
         return this.userService.authenticate(loginRequest, response);
 //        response.getWriter().write("resetPasswordToken"+loginRequest.getResetPasswordToken());
 //        return ResponseEntity.ok(loginRequest);
@@ -66,24 +66,31 @@ public class OpenAuthenticationApiController {
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                LOGGER.error("Unable to get JWT Token: {}",e.toString(),e);
+                LOGGER.error("Unable to get JWT Token: {}", e.toString(), e);
                 throw new RuntimeException(e);
             } catch (ExpiredJwtException e) {
-                LOGGER.error("JWT Token has expired: {}",e.toString(),e);
+                LOGGER.error("JWT Token has expired: {}", e.toString(), e);
                 throw new RuntimeException(e);
             }
         } else {
             LOGGER.warn("JWT Token does not begin with Bearer String");
         }
 
-        if(username == null || username.length() == 0)
-          throw new RuntimeException("username is empty or null");
+        if (username == null || username.length() == 0)
+            throw new RuntimeException("username is empty or null");
 
         UserAccount loginUser = this.userService.getLoginUser(username);
         loginUser.setPassword("*****");
-        loginUser.setRoles(this.userRepository.getRoles(username))  ;
-//        loginUser.setUserProfile(); // fromDAO
-        UserAuthContext userAuthContext = new UserAuthContext(loginUser,null);
+        loginUser.setRoles(this.userRepository.getRoles(username));
+
+        // handling if the userProfile is null or Empty (avoiding empty result)
+        try {
+            loginUser.setUserProfile(this.userRepository.getUserProfile(username)); // fromDAO
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        UserAuthContext userAuthContext = new UserAuthContext(loginUser, null);
         return ResponseEntity.ok(userAuthContext);
     }
 
@@ -91,5 +98,30 @@ public class OpenAuthenticationApiController {
     public ResponseEntity<LoginUser> resetPassword(@RequestBody LoginRequest loginRequest) {
         LoginUser loginUser = this.userService.resetPassword(loginRequest);
         return ResponseEntity.ok(loginUser);
+    }
+
+    @PostMapping("/forget-password")
+    @Transactional
+    public ResponseEntity<String> forgetPassword(@RequestBody String userName) {
+        LoginUser loginUser = this.userService.checkIfUserExist(userName);
+        System.out.println(loginUser.getUsername());
+        String otp = null;
+        if (loginUser != null) {
+            System.out.println(userName);
+            otp = this.userService.generateOtp(userName);
+            LOGGER.info("ACTUAL OTP - "+ otp);
+            System.out.println("ACTUAL OTP - "+ otp);
+        }
+        return ResponseEntity.ok(otp);
+    }
+
+    @PostMapping("/validate-otp")
+    public ResponseEntity<Boolean> validate(@RequestBody OtpUser otpUser) {
+        Boolean isValid = this.userService.validateOtp(otpUser.getOtp(), otpUser.getUser());
+        if (isValid)
+            return ResponseEntity.ok(true);
+        else {
+            return ResponseEntity.ok(false);
+        }
     }
 }

@@ -23,4 +23,9 @@ public interface IUserService {
     String authenticate(LoginRequest loginRequest, HttpServletResponse response);
     String generateResetPasswordToken(LoginRequest loginRequest);
     List<UserAccount> getUserRole();
+    UserProfile getUserProfileDetails(String userName);
+    String generateOtp(String userName);
+    LoginUser checkIfUserExist(String userName);
+    Boolean validateOtp(String userOtp, String user);
+    String getOtpFromDB(String userName);
 }

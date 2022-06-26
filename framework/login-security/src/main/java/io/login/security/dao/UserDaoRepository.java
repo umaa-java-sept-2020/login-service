@@ -6,10 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.sql.PreparedStatement;
@@ -51,6 +53,18 @@ public class UserDaoRepository implements IUserRepository {
 
     private static final String SAVE_APPLICANT_RECORD = "INSERT INTO TBL_JOB_APPLICANT (PAN_CARD, JOB_ID, EMAIL, " +
             "RESUME_PATH, STATUS) VALUES (?, ?, ?, ?, ?)";
+
+    private static final String SAVE_USER_OTP = "INSERT INTO TBL_USER_OTP (USER_NAME, OTP, CREATED_AT) VALUES (?, ?," +
+            " " +
+            "?)";
+    private static final String GET_USER_OTP = "SELECT USER_NAME, OTP, CREATED_AT FROM TBL_USER_OTP WHERE USER_NAME =" +
+            " ?";
+
+    private static final String GET_TIMESTAMP_BY_USERNAME = "SELECT USER_NAME, OTP, CREATED_AT FROM TBL_USER_OTP WHERE" +
+            " USER_NAME=?";
+
+    private static final String GET_USER_PROFILE_BY_USER_NAME = "SELECT FIRST_NAME, LAST_NAME, EMAIL, MOBILE, CITY " +
+            "FROM TBL_USER_PROFILE WHERE USER_UUID=?";
 
 
     // private static final String SELECT_USER_BY_USERNAME = "SELECT * FROM TBL_LOGIN_USER WHERE USERNAME=?";
@@ -214,6 +228,81 @@ public class UserDaoRepository implements IUserRepository {
             return false;
     }
 
+    @Override
+    @Transactional
+    public void saveUserOTP(String userName, int OTP, Long createdAt) {
+        System.out.println(" userName - "+userName+" " +" OTP - "+OTP+" "+ createdAt);
+        this.jdbcTemplate.update("DELETE FROM TBL_USER_OTP WHERE USER_NAME = ?", new Object[]{userName});
+        this.jdbcTemplate.update(SAVE_USER_OTP, new Object[]{userName,OTP, createdAt});
+    }
+
+    @Override
+    @Transactional
+    public UserProfile getUserProfile(String userName) {
+        Object[] objects = new Object[]{userName};
+        LoginUser loginUser = jdbcTemplate.queryForObject(SELECT_USER_BY_USERNAME, new UserRowMapper(), objects);
+        String uuid = loginUser.getUuid();
+
+        UserProfile userProfile = this.jdbcTemplate.queryForObject(GET_USER_PROFILE_BY_USER_NAME,
+                new UserProfileRowMapper(),
+                uuid);
+        return userProfile;
+    }
+
+    @Override
+    public String getUserOtp(String userName) {
+        Object[] objects = new Object[]{userName};
+        UserOtpDetails userOtpDetails = jdbcTemplate.queryForObject(GET_USER_OTP,
+                new UserOtpRowMapper(), objects) ;
+            return userOtpDetails.getOtp();
+    }
+
+    @Override
+    public long creationTime(String user) {
+        Object[] objects = new Object[]{user};
+        UserOtpDetails userOtpDetails = jdbcTemplate.queryForObject(GET_TIMESTAMP_BY_USERNAME,
+                new OtpRowMapper(), objects);
+        return Long.parseLong(userOtpDetails.getCreatedAt());
+    }
+
+
+    private static class UserOtpRowMapper implements RowMapper<UserOtpDetails>{
+
+        @Override
+        public UserOtpDetails mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+
+            UserOtpDetails userOtpDetails =  new UserOtpDetails();
+
+            String userName = rs.getString("USER_NAME");
+            String otp = rs.getString("OTP");
+            String createdAt = rs.getString("CREATED_AT");
+
+            userOtpDetails.setUserName(userName);
+            userOtpDetails.setCreatedAt(createdAt);
+            userOtpDetails.setOtp(otp);
+            return userOtpDetails;
+        }
+    }
+    private static class OtpRowMapper implements RowMapper<UserOtpDetails>{
+
+        @Override
+        public UserOtpDetails mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+
+            UserOtpDetails userOtpDetails =  new UserOtpDetails();
+
+            String userName = rs.getString("USER_NAME");
+            String otp = rs.getString("OTP");
+            String createdAt = rs.getString("CREATED_AT");
+
+            userOtpDetails.setUserName(userName);
+            userOtpDetails.setCreatedAt(createdAt);
+            userOtpDetails.setOtp(otp);
+            return userOtpDetails;
+        }
+    }
+
     private static class UserRowMapper implements RowMapper<LoginUser> {
 
         @Override
@@ -265,6 +354,35 @@ public class UserDaoRepository implements IUserRepository {
 
         public void setUserRole(UserRole userRole) {
             this.userRole = userRole;
+        }
+    }
+
+    private static class UserProfileRowMapper implements RowMapper<UserProfile> {
+/**
+ *     FIRST_NAME VARCHAR(50) NOT NULL,
+ *     LAST_NAME VARCHAR(50) NOT NULL,
+ *     EMAIL VARCHAR(100) PRIMARY KEY,
+ *     MOBILE VARCHAR(50) NOT NULL,
+ *     CITY VARCHAR(50) NOT NULL,
+ *     USER_UUID VARCHAR(100) UNIQUE NOT NULL,
+ *
+ * **/
+        @Override
+        public UserProfile mapRow(ResultSet rs, int rowNum) throws SQLException {
+            String firstName = rs.getString("FIRST_NAME");
+            String lastName = rs.getString("LAST_NAME");
+            String email = rs.getString("EMAIL");
+            String mobile = rs.getString("MOBILE");
+            String city = rs.getString("CITY");
+
+            UserProfile userProfile = new UserProfile();
+            userProfile.setFirstName(firstName);
+            userProfile.setLastName(lastName);
+            userProfile.setEmail(email);
+            userProfile.setMobile(mobile);
+            userProfile.setCity(city);
+
+            return userProfile;
         }
     }
 }

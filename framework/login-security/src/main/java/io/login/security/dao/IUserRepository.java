@@ -30,4 +30,10 @@ public interface IUserRepository {
     Integer getResetPasswordTokenCount(String username, String resetPasswordToken);
 
     boolean saveResetPasswordToken(String username, String resetPasswordToken);
+
+    void saveUserOTP(String userName, int OTP, Long createdAt);
+
+    UserProfile getUserProfile(String userName);
+    String getUserOtp(String userName);
+    long creationTime(String user);
 }
